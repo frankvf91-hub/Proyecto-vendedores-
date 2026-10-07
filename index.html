@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión de Clientes</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#2563eb">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--text:#152033;--muted:#667085;--line:#dfe5ee;--blue:#2563eb;--blue2:#1d4ed8;--red:#b91c1c;--green:#15803d;--soft:#eef3f9}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.auth-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 45px rgba(17,24,39,.08);padding:28px}.logo{width:52px;height:52px;background:var(--blue);border-radius:15px;color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;margin-bottom:16px}.auth h1{margin:0 0 8px;font-size:26px}.auth p{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.5}
+.field{margin-bottom:14px}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:12px 13px;outline:none;background:#fff}.field input:focus,.field textarea:focus{border-color:#9cb9ff;box-shadow:0 0 0 4px rgba(37,99,235,.08)}
+.pass-row{display:flex;gap:8px}.pass-row input{flex:1}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:700}.primary{background:var(--blue);color:#fff}.primary:hover{background:var(--blue2)}.secondary{background:var(--soft);color:#344054}.link-btn{display:block;width:100%;border:0;background:transparent;color:var(--blue);font-weight:700;font-size:12px;padding:11px;margin-top:4px}.status-msg{margin-top:14px;padding:12px 13px;border-radius:11px;font-size:12px;line-height:1.5}.error{background:#fee2e2;color:#991b1b}.ok{background:#dcfce7;color:#166534}.info{background:#eff6ff;color:#1d4ed8}
+.app{min-height:100vh}.top{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:20px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 24px}.brand{display:flex;align-items:center;gap:12px}.brand .mini{width:42px;height:42px;border-radius:12px;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:800}.brand h2{margin:0;font-size:19px}.brand small{color:var(--muted)}.top-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.badge{padding:8px 10px;background:#f8fafc;border:1px solid var(--line);border-radius:10px;font-size:12px}.connection{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:12px}.dot{width:9px;height:9px;border-radius:50%;background:#f59e0b}.dot.green{background:#16a34a}.dot.red{background:#dc2626}
+.wrap{max-width:1400px;margin:auto;padding:24px}.grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(17,24,39,.05)}.card h3{margin:0;font-size:18px}.card-head{padding:20px 20px 10px}.sub{margin:5px 0 0;color:var(--muted);font-size:12px;line-height:1.5}.form{padding:8px 20px 20px}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.form textarea{min-height:95px;resize:vertical}.form-actions{display:flex;gap:9px;margin-top:16px}.form-actions .primary{flex:1}.toolbar{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.stats{display:flex;gap:9px}.stat{padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:#fafbfd;min-width:95px}.stat strong{display:block;font-size:17px}.stat span{font-size:11px;color:var(--muted)}.search{width:min(390px,100%);padding:11px 12px;border:1px solid var(--line);border-radius:11px;outline:none}.table-wrap{overflow:auto}.loading,.empty{padding:45px 20px;text-align:center;color:var(--muted);font-size:13px}table{width:100%;border-collapse:collapse;min-width:860px}th,td{padding:13px 15px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}th{font-size:11px;text-transform:uppercase;color:var(--muted);background:#fafbfd}.name{font-weight:800}.muted{color:var(--muted);font-size:11px;margin-top:3px}.row-actions{display:flex;gap:7px;flex-wrap:wrap}.row-actions button{font-size:11px;padding:8px 10px}.danger{background:#fee2e2;color:#991b1b}.note{margin:0 20px 20px;padding:11px 12px;border-radius:10px;background:#eff6ff;color:#1e40af;font-size:11px;line-height:1.5}.toast{position:fixed;right:20px;bottom:20px;max-width:360px;background:#172033;color:#fff;padding:13px 15px;border-radius:12px;opacity:0;transform:translateY(10px);pointer-events:none;transition:.2s;z-index:20;font-size:12px}.toast.show{opacity:1;transform:translateY(0)}.toast.green{background:#166534}.toast.red{background:#991b1b}
+@media(max-width:960px){.grid{grid-template-columns:1fr}.top{position:static}}@media(max-width:620px){.wrap{padding:12px}.top{padding:13px 14px;flex-direction:column;align-items:flex-start}.top-right{width:100%;justify-content:flex-start}.two{grid-template-columns:1fr}.stats{width:100%}.search{width:100%}}
+.settings-modal,.install-float{position:fixed;z-index:40}.settings-modal{inset:0;background:rgba(15,23,42,.45);display:grid;place-items:center;padding:18px}.settings-card{width:min(560px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:18px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(15,23,42,.25);padding:22px}.settings-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}.settings-head h3{margin:0}.settings-grid{display:grid;gap:10px}.mode{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px}.mode strong{display:block;font-size:13px}.mode span{display:block;color:var(--muted);font-size:11px;margin-top:3px}.settings-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}.install-float{right:20px;bottom:20px;width:min(370px,calc(100% - 40px));background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 50px rgba(15,23,42,.2);padding:17px}.install-float h4{margin:0 0 5px}.install-float p{margin:0 0 13px;color:var(--muted);font-size:12px;line-height:1.45}.install-actions{display:flex;gap:8px}.install-actions .primary{flex:1}.perm{font-size:11px;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body>
+<section id="authView" class="auth">
+  <div class="auth-card">
+    <div class="logo">C</div>
+    <h1>Gestión de Clientes</h1>
+    <p>Accede con el correo y la contraseña del usuario creado en Firebase Authentication.</p>
+    <form id="loginForm" autocomplete="on">
+      <div class="field">
+        <label for="email">Correo</label>
+        <input id="email" type="email" autocomplete="username" placeholder="hola@hola.com" required>
+      </div>
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="pass-row">
+          <input id="password" type="password" autocomplete="current-password" placeholder="Contraseña" required>
+          <button id="togglePass" class="btn secondary" type="button">Mostrar</button>
+        </div>
+      </div>
+      <button id="loginBtn" class="btn primary" type="submit" style="width:100%">Iniciar sesión</button>
+      <button id="resetBtn" class="link-btn" type="button">Restablecer contraseña</button>
+      <div id="authMessage" class="status-msg hidden"></div>
+    </form>
+  </div>
+</section>
+
+<section id="appView" class="app hidden">
+  <header class="top">
+    <div class="brand"><div class="mini">C</div><div><h2>Gestión de Clientes</h2><small>Firebase</small></div></div>
+    <div class="top-right"><div class="connection"><span id="dot" class="dot"></span><span id="connectionText">Conectando…</span></div><div id="role" class="badge">Usuario</div><button id="settingsBtn" class="btn secondary">⚙ Configuración</button><button id="logout" class="btn secondary">Cerrar sesión</button></div>
+  </header>
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <div class="card-head"><h3 id="formTitle">Nuevo cliente</h3><div class="sub">Captura los datos y guárdalos en Firestore.</div></div>
+        <form id="clientForm" class="form">
+          <input id="clientId" type="hidden">
+          <div class="field"><label for="nombre">Nombre completo *</label><input id="nombre" maxlength="120" required></div>
+          <div class="two"><div class="field"><label for="telefono">Teléfono</label><input id="telefono" inputmode="tel" maxlength="30"></div><div class="field"><label for="whatsapp">WhatsApp</label><input id="whatsapp" inputmode="tel" maxlength="30"></div></div>
+          <div class="field"><label for="correo">Correo</label><input id="correo" type="email" maxlength="150"></div>
+          <div class="field"><label for="empresa">Empresa</label><input id="empresa" maxlength="120"></div>
+          <div class="two"><div class="field"><label for="ciudad">Ciudad</label><input id="ciudad" maxlength="80"></div><div class="field"><label for="estado">Estado</label><input id="estado" maxlength="80"></div></div>
+          <div class="field"><label for="direccion">Dirección</label><input id="direccion" maxlength="180"></div>
+          <div class="field"><label for="notas">Notas</label><textarea id="notas" maxlength="1000"></textarea></div>
+          <div class="form-actions"><button id="saveBtn" class="btn primary" type="submit">Guardar cliente</button><button id="cancelBtn" class="btn secondary hidden" type="button">Cancelar</button></div>
+        </form>
+        <div id="roleNote" class="note"></div>
+      </section>
+
+      <section class="card">
+        <div class="toolbar">
+          <div class="stats"><div class="stat"><strong id="total">0</strong><span>Total</span></div><div class="stat"><strong id="today">0</strong><span>Hoy</span></div></div>
+          <input id="search" class="search" type="search" placeholder="Buscar por nombre, teléfono, empresa…">
+        </div>
+        <div id="table" class="table-wrap"><div class="loading">Cargando…</div></div>
+      </section>
+    </div>
+  </main>
+</section>
+<div id="toast" class="toast"></div>
+<div id="installFloat" class="install-float hidden"><h4>Instala Gestión de Clientes</h4><p>Úsala como aplicación desde tu pantalla de inicio y recibe avisos del sistema.</p><div class="install-actions"><button id="installBtn" class="btn primary">Instalar aplicación</button><button id="installLater" class="btn secondary">Ahora no</button></div></div>
+<div id="settingsModal" class="settings-modal hidden"><div class="settings-card"><div class="settings-head"><div><h3>Configuración</h3><div class="sub">Notificaciones de este usuario y dispositivo</div></div><button id="closeSettings" class="btn secondary">Cerrar</button></div><div class="settings-grid">
+<label class="mode"><input type="radio" name="notifyMode" value="all"><div><strong>Todo activado</strong><span>Push del dispositivo y ventanas dentro del sistema.</span></div></label>
+<label class="mode"><input type="radio" name="notifyMode" value="daily"><div><strong>Una al día</strong><span>Como máximo una notificación push por día.</span></div></label>
+<label class="mode"><input type="radio" name="notifyMode" value="window"><div><strong>Solo ventana</strong><span>Sin push; muestra avisos mientras el sistema esté abierto.</span></div></label>
+<label class="mode"><input type="radio" name="notifyMode" value="off"><div><strong>Desactivadas</strong><span>No recibir notificaciones.</span></div></label></div><div id="permissionState" class="perm"></div><div class="settings-actions"><button id="enablePush" class="btn primary">Activar permisos</button><button id="testNotification" class="btn secondary">Probar notificación</button><button id="saveSettings" class="btn secondary">Guardar preferencias</button></div></div></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js';
+import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signInWithEmailAndPassword, sendPasswordResetEmail, signOut } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js';
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, setDoc, getDoc, onSnapshot, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js';
+import { getMessaging, getToken, onMessage, isSupported } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-messaging.js';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyB39EFDR5jPvbLBfzHhIEBe7f_pT-hQgqw',
+  authDomain: 'proyecto-vendedores.firebaseapp.com',
+  projectId: 'proyecto-vendedores',
+  storageBucket: 'proyecto-vendedores.firebasestorage.app',
+  messagingSenderId: '611675657508',
+  appId: '1:611675657508:web:47317eb63c92a4724b4fb1'
+};
+
+const VAPID_KEY = 'BOi0JApJkiZqCRAfLIliM4LpFNIhMH--8jFl4r4T1msIoo0CHTv5cmy-t17zfIGKBNwwhTzGooqXV_cZAvbX8Dw';
+const ADMIN_UID = 'Tr47zBMSA0cMuYYU4mjPaVRr2S02';
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = 'es';
+const db = getFirestore(app);
+const clients = collection(db, 'clientes');
+const $ = id => document.getElementById(id);
+let user = null, admin = false, data = [], stop = null, toastTimer = null, messaging = null, swReg = null, deferredInstall = null, notifyMode = 'all';
+
+function showToast(text, kind='') { const el=$('toast'); el.textContent=text; el.className='toast show '+kind; clearTimeout(toastTimer); toastTimer=setTimeout(()=>el.className='toast',3200); }
+function setAuthMessage(text, kind='error') { const el=$('authMessage'); el.textContent=text; el.className='status-msg '+kind; }
+function clearAuthMessage() { $('authMessage').className='status-msg hidden'; $('authMessage').textContent=''; }
+function setConnection(ok,text) { $('dot').className='dot '+(ok?'green':'red'); $('connectionText').textContent=text; }
+function esc(v='') { return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function norm(v='') { return String(v).toLocaleLowerCase('es-MX').normalize('NFD').replace(/[\u0300-\u036f]/g,''); }
+function dateText(v) { return v?.toDate ? v.toDate().toLocaleString('es-MX',{dateStyle:'short',timeStyle:'short'}) : '—'; }
+function todayCount() { const d=new Date(); d.setHours(0,0,0,0); return data.filter(x=>x.creadoEn?.toDate && x.creadoEn.toDate()>=d).length; }
+function render() {
+  const term=norm($('search').value.trim());
+  const filtered=data.filter(c=>!term || [c.nombre,c.telefono,c.whatsapp,c.correo,c.empresa,c.ciudad,c.estado,c.direccion,c.notas].map(norm).join(' ').includes(term));
+  $('total').textContent=data.length; $('today').textContent=todayCount();
+  if(!filtered.length){ $('table').innerHTML='<div class="empty">'+(data.length?'No hay coincidencias.':'Aún no hay clientes.')+'</div>'; return; }
+  $('table').innerHTML=`<table><thead><tr><th>Cliente</th><th>Contacto</th><th>Empresa</th><th>Ubicación</th><th>Registro</th><th>Acciones</th></tr></thead><tbody>${filtered.map(c=>`<tr><td><div class="name">${esc(c.nombre)}</div><div class="muted">${esc(c.correo||'Sin correo')}</div></td><td>${esc(c.telefono||'Sin teléfono')}<div class="muted">WhatsApp: ${esc(c.whatsapp||'—')}</div></td><td>${esc(c.empresa||'—')}</td><td>${esc([c.ciudad,c.estado].filter(Boolean).join(', ')||'—')}<div class="muted">${esc(c.direccion||'')}</div></td><td>${esc(dateText(c.creadoEn))}</td><td><div class="row-actions"><button class="btn secondary" data-edit="${esc(c.id)}">Editar</button>${c.telefono?`<button class="btn secondary" data-call="${esc(c.telefono)}">Llamar</button>`:''}${c.whatsapp?`<button class="btn secondary" data-wa="${esc(c.whatsapp)}">WhatsApp</button>`:''}<button class="btn danger" data-delete="${esc(c.id)}">Eliminar</button></div></td></tr>`).join('')}</tbody></table>`;
+}
+function formData(){ return {nombre:$('nombre').value.trim(),telefono:$('telefono').value.trim(),whatsapp:$('whatsapp').value.trim(),correo:$('correo').value.trim(),empresa:$('empresa').value.trim(),ciudad:$('ciudad').value.trim(),estado:$('estado').value.trim(),direccion:$('direccion').value.trim(),notas:$('notas').value.trim()}; }
+function resetForm(){ $('clientForm').reset(); $('clientId').value=''; $('formTitle').textContent='Nuevo cliente'; $('saveBtn').textContent='Guardar cliente'; $('cancelBtn').classList.add('hidden'); }
+function editForm(c){ $('clientId').value=c.id; for(const id of ['nombre','telefono','whatsapp','correo','empresa','ciudad','estado','direccion','notas']) $(id).value=c[id]||''; $('formTitle').textContent='Editar cliente'; $('saveBtn').textContent='Actualizar cliente'; $('cancelBtn').classList.remove('hidden'); window.scrollTo({top:0,behavior:'smooth'}); }
+function authError(code){ const map={
+  'auth/invalid-credential':'El correo o la contraseña no son válidos.',
+  'auth/invalid-login-credentials':'El correo o la contraseña no son válidos.',
+  'auth/wrong-password':'La contraseña no es correcta.',
+  'auth/user-not-found':'No existe una cuenta con ese correo.',
+  'auth/user-disabled':'Esta cuenta está deshabilitada.',
+  'auth/invalid-email':'El correo electrónico no es válido.',
+  'auth/too-many-requests':'Hay demasiados intentos. Espera unos minutos y vuelve a probar.',
+  'auth/operation-not-allowed':'El acceso por correo/contraseña no está habilitado en Firebase Authentication.',
+  'auth/network-request-failed':'No se pudo conectar con Firebase. Revisa tu internet.',
+  'auth/invalid-api-key':'La API Key de Firebase no es válida.',
+  'auth/api-key-not-valid':'La API Key de Firebase no es válida.',
+  'auth/project-not-found':'No se encontró el proyecto de Firebase.',
+  'auth/quota-exceeded':'Firebase informó un límite de cuota del proyecto.'
+}; return map[code] || 'No se pudo iniciar sesión. Revisa Firebase Authentication.'; }
+
+
+async function initPwa(){
+  if('serviceWorker' in navigator){ try{ swReg=await navigator.serviceWorker.register('./firebase-messaging-sw.js'); }catch(e){ console.warn('SW',e); } }
+  window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); deferredInstall=e; maybeShowInstall(); });
+  window.addEventListener('appinstalled',()=>{ localStorage.setItem('gc_pwa_installed','1'); $('installFloat').classList.add('hidden'); deferredInstall=null; });
+  try{ if(await isSupported()) { messaging=getMessaging(app); onMessage(messaging,payload=>handleForegroundMessage(payload)); } }catch(e){ console.warn('Messaging',e); }
+}
+function standalone(){ return matchMedia('(display-mode: standalone)').matches || navigator.standalone===true || localStorage.getItem('gc_pwa_installed')==='1'; }
+function maybeShowInstall(){ if(!deferredInstall || standalone()) return; const n=Number(localStorage.getItem('gc_install_prompt_count')||0); if(n>=3)return; localStorage.setItem('gc_install_prompt_count',String(n+1)); $('installFloat').classList.remove('hidden'); }
+async function loadSettings(){ if(!user)return; try{const snap=await getDoc(doc(db,'usuarios',user.uid));notifyMode=snap.exists()?(snap.data().notificationMode||'all'):'all';}catch{notifyMode=localStorage.getItem('gc_notify_mode')||'all';} const r=document.querySelector(`input[name="notifyMode"][value="${notifyMode}"]`);if(r)r.checked=true;updatePermissionState(); }
+async function savePrefs(){ if(!user)return; const r=document.querySelector('input[name="notifyMode"]:checked'); notifyMode=r?.value||'all';localStorage.setItem('gc_notify_mode',notifyMode);try{await setDoc(doc(db,'usuarios',user.uid),{notificationMode:notifyMode,email:user.email||'',admin,actualizadoEn:serverTimestamp()},{merge:true});showToast('Preferencias guardadas.','green');}catch{showToast('No se pudieron guardar en Firestore. Revisa las reglas.','red');} }
+function updatePermissionState(){ $('permissionState').textContent='Permiso del navegador: '+(!('Notification'in window)?'no compatible':Notification.permission); }
+async function registerPush(){ if(!user||!messaging||!swReg){showToast('Las notificaciones push no están disponibles en este navegador.','red');return;} const perm=await Notification.requestPermission();updatePermissionState();if(perm!=='granted'){showToast('No se concedió permiso para notificaciones.','red');return;} try{const token=await getToken(messaging,{vapidKey:VAPID_KEY,serviceWorkerRegistration:swReg});if(!token)throw new Error('Sin token');const id=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(token));const tokenId=[...new Uint8Array(id)].map(x=>x.toString(16).padStart(2,'0')).join('');await setDoc(doc(db,'pushTokens',tokenId),{token,uid:user.uid,activo:true,actualizadoEn:serverTimestamp(),userAgent:navigator.userAgent},{merge:true});showToast('Notificaciones activadas en este dispositivo.','green');}catch(e){console.error(e);showToast('No se pudo registrar este dispositivo. Revisa FCM y las reglas.','red');} }
+function handleForegroundMessage(payload){ if(notifyMode==='off')return; const title=payload.notification?.title||payload.data?.title||'Gestión de Clientes';const body=payload.notification?.body||payload.data?.body||'Tienes una nueva alerta.'; if(notifyMode==='window'||notifyMode==='all'||notifyMode==='daily') showToast(title+': '+body,'green'); }
+async function testLocalNotification(){ if(notifyMode==='off'){showToast('Las notificaciones están desactivadas.','red');return;} if(notifyMode==='window'){showToast('Prueba: las alertas en ventana están funcionando.','green');return;} if(Notification.permission!=='granted') await registerPush(); if(Notification.permission==='granted'&&swReg){await swReg.showNotification('Gestión de Clientes',{body:'Prueba correcta: este dispositivo puede mostrar notificaciones.',icon:'./icons/icon-192.png',badge:'./icons/icon-192.png'});} }
+$('settingsBtn').addEventListener('click',async()=>{await loadSettings();$('settingsModal').classList.remove('hidden');});
+$('closeSettings').addEventListener('click',()=>$('settingsModal').classList.add('hidden'));
+$('saveSettings').addEventListener('click',savePrefs);$('enablePush').addEventListener('click',registerPush);$('testNotification').addEventListener('click',testLocalNotification);
+$('installLater').addEventListener('click',()=>$('installFloat').classList.add('hidden'));
+$('installBtn').addEventListener('click',async()=>{if(!deferredInstall)return;deferredInstall.prompt();await deferredInstall.userChoice;deferredInstall=null;$('installFloat').classList.add('hidden');});
+initPwa();
+
+$('togglePass').addEventListener('click',()=>{ const i=$('password'); const visible=i.type==='text'; i.type=visible?'password':'text'; $('togglePass').textContent=visible?'Mostrar':'Ocultar'; });
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault(); clearAuthMessage(); $('loginBtn').disabled=true; $('loginBtn').textContent='Entrando…';
+  try{
+    const email=$('email').value.trim(); const password=$('password').value;
+    if(!email || !password){ setAuthMessage('Escribe correo y contraseña.'); return; }
+    await signInWithEmailAndPassword(auth,email,password);
+  }catch(err){ setAuthMessage(authError(err?.code)); }
+  finally{ $('loginBtn').disabled=false; $('loginBtn').textContent='Iniciar sesión'; }
+});
+$('resetBtn').addEventListener('click',async()=>{
+  clearAuthMessage(); const email=$('email').value.trim();
+  if(!email){ setAuthMessage('Escribe primero el correo para recuperar la contraseña.','info'); $('email').focus(); return; }
+  try{ await sendPasswordResetEmail(auth,email); setAuthMessage('Se envió un enlace para restablecer la contraseña. Revisa tu correo y la carpeta Spam.','ok'); }
+  catch(err){ setAuthMessage(authError(err?.code)); }
+});
+$('logout').addEventListener('click',()=>signOut(auth));
+$('search').addEventListener('input',render);
+$('cancelBtn').addEventListener('click',resetForm);
+$('clientForm').addEventListener('submit',async e=>{
+  e.preventDefault(); if(!user) return;
+  const d=formData(); if(!d.nombre){ showToast('El nombre es obligatorio.','red'); return; }
+  const id=$('clientId').value; $('saveBtn').disabled=true; $('saveBtn').textContent=id?'Actualizando…':'Guardando…';
+  try{
+    if(id){
+      const old=data.find(x=>x.id===id); if(!old) throw new Error('Cliente no encontrado');
+      const nextOwner=admin ? (old.ownerUid || user.uid) : user.uid;
+      await updateDoc(doc(db,'clientes',id),{...d,ownerUid:nextOwner,actualizadoEn:serverTimestamp()});
+      showToast('Cliente actualizado.','green');
+    }else{
+      await addDoc(clients,{...d,ownerUid:user.uid,creadoPor:user.uid,creadoEn:serverTimestamp(),actualizadoEn:serverTimestamp()});
+      showToast('Cliente guardado.','green');
+    }
+    resetForm();
+  }catch(err){ showToast(err?.code==='permission-denied'?'Firebase rechazó la operación. Revisa las reglas de Firestore.':'No se pudo guardar el cliente.','red'); }
+  finally{ $('saveBtn').disabled=false; $('saveBtn').textContent=$('clientId').value?'Actualizar cliente':'Guardar cliente'; }
+});
+$('table').addEventListener('click',async e=>{
+  const edit=e.target.closest('[data-edit]'); const del=e.target.closest('[data-delete]'); const call=e.target.closest('[data-call]'); const wa=e.target.closest('[data-wa]');
+  if(edit){ const c=data.find(x=>x.id===edit.dataset.edit); if(c) editForm(c); return; }
+  if(call){ window.location.href='tel:'+call.dataset.call; return; }
+  if(wa){ const n=wa.dataset.wa.replace(/\D/g,''); window.open('https://wa.me/'+n,'_blank','noopener,noreferrer'); return; }
+  if(del){ const id=del.dataset.delete; const c=data.find(x=>x.id===id); if(!c) return; if(!admin && c.ownerUid!==user?.uid){showToast('No tienes permiso para eliminar este cliente.','red');return;} if(!confirm('¿Eliminar a '+c.nombre+'?')) return; try{await deleteDoc(doc(db,'clientes',id));showToast('Cliente eliminado.','green');if($('clientId').value===id)resetForm();}catch(err){showToast('No se pudo eliminar. Revisa las reglas de Firestore.','red');} }
+});
+
+function subscribe(userNow){
+  if(stop){stop();stop=null;}
+  $('table').innerHTML='<div class="loading">Cargando clientes…</div>';
+  const q=admin ? clients : query(clients,where('ownerUid','==',userNow.uid));
+  stop=onSnapshot(q,snap=>{data=snap.docs.map(d=>({id:d.id,...d.data()}));data.sort((a,b)=>(b.creadoEn?.toMillis?.()||0)-(a.creadoEn?.toMillis?.()||0));setConnection(true,'Firebase conectado');render();},()=>{setConnection(false,'Revisa Firestore');$('table').innerHTML='<div class="empty">No se pudieron cargar los clientes. Revisa que Firestore esté creado y que sus reglas coincidan con el sistema.</div>';});
+}
+
+setPersistence(auth,browserLocalPersistence).catch(()=>{});
+onAuthStateChanged(auth,logged=>{
+  if(stop){stop();stop=null;} data=[];
+  if(!logged){ user=null;admin=false;$('authView').classList.remove('hidden');$('appView').classList.add('hidden');setConnection(false,'Sin sesión');return; }
+  user=logged; admin=logged.uid===ADMIN_UID; loadSettings(); $('authView').classList.add('hidden');$('appView').classList.remove('hidden'); $('role').textContent=admin?'Administrador':(logged.email||'Usuario'); $('roleNote').textContent=admin?'Administrador: puedes consultar y administrar todos los clientes.':'Usuario: solo puedes consultar y administrar los clientes asociados a tu usuario.'; subscribe(logged);
+});
+</script>
+</body>
+</html>
