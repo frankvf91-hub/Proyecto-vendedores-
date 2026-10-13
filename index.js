@@ -10,3 +10,30 @@ function dayRange(){const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,yea
 async function tokensFor(uid,mode){const snap=await db.collection('pushTokens').where('uid','==',uid).where('activo','==',true).get();return snap.docs.map(d=>({id:d.id,...d.data()})).filter(x=>x.token&&mode!=='off'&&mode!=='window');}
 async function sendTokens(items,title,body){for(let i=0;i<items.length;i+=500){const batch=items.slice(i,i+500);const res=await getMessaging().sendEachForMulticast({tokens:batch.map(x=>x.token),notification:{title,body},webpush:{fcmOptions:{link:'/'},notification:{icon:'/icons/icon-192.png',badge:'/icons/icon-192.png'}}});for(let j=0;j<res.responses.length;j++){const r=res.responses[j];if(!r.success&&['messaging/registration-token-not-registered','messaging/invalid-registration-token'].includes(r.error?.code))await db.collection('pushTokens').doc(batch[j].id).set({activo:false},{merge:true});}}}
 exports.resumenDiario=onSchedule({schedule:'30 20 * * *',timeZone:TZ,region:'us-central1'},async()=>{const {start,end,key}=dayRange();const snap=await db.collection('clientes').where('creadoEn','>=',start).where('creadoEn','<',end).get();if(snap.empty){logger.info('Sin registros; no se envían notificaciones.');return;}const counts={};snap.forEach(d=>{const x=d.data();if(x.creadoPor)counts[x.creadoPor]=(counts[x.creadoPor]||0)+1;});const users=await db.collection('usuarios').get();for(const u of users.docs){const pref=u.data();const mode=pref.notificationMode||'all';let count=pref.admin?snap.size:(counts[u.id]||0);if(!count||mode==='off'||mode==='window')continue;if(mode==='daily'){const marker=db.collection('notificationDaily').doc(`${u.id}_${key}`);if((await marker.get()).exists)continue;await marker.set({uid:u.id,fecha:key,enviadoEn:Timestamp.now()});}const items=await tokensFor(u.id,mode);if(items.length)await sendTokens(items,'Resumen del día',`Hoy se registraron ${count} ${count===1?'cliente':'clientes'}.`);}});
+
+
+function localDateKey(date=new Date()){
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(date);
+  const o=Object.fromEntries(parts.map(p=>[p.type,p.value]));return `${o.year}-${o.month}-${o.day}`;
+}
+function visitInstant(fecha,hora){
+  // America/Mexico_City is UTC-6 for the operating region used by this project.
+  const [y,m,d]=String(fecha).split('-').map(Number),[hh,mm]=String(hora||'00:00').split(':').map(Number);
+  return new Date(Date.UTC(y,m-1,d,(hh||0)+6,mm||0));
+}
+exports.alertasVisitas=onSchedule({schedule:'every 15 minutes',timeZone:TZ,region:'us-central1'},async()=>{
+  const today=localDateKey(),tomorrow=localDateKey(new Date(Date.now()+86400000));
+  const snap=await db.collection('visitas').where('estado','==','programada').get();
+  const now=Date.now();
+  for(const d of snap.docs){
+    const v=d.data();if(v.alertaEnviada||![today,tomorrow].includes(v.fecha))continue;
+    const when=visitInstant(v.fecha,v.hora).getTime(),before=Number(v.alertaMin||60)*60000;
+    if(when<now||when-now>before)continue;
+    const us=await db.collection('usuarios').doc(v.ownerUid).get();const pref=us.exists?us.data():{};const mode=pref.notificationMode||'all';
+    if(mode==='off'||mode==='window')continue;
+    if(mode==='daily'){const key=localDateKey();const marker=db.collection('notificationDaily').doc(`${v.ownerUid}_${key}`);if((await marker.get()).exists)continue;await marker.set({uid:v.ownerUid,fecha:key,enviadoEn:Timestamp.now(),tipo:'visita'});}
+    const items=await tokensFor(v.ownerUid,mode);if(!items.length)continue;
+    await sendTokens(items,'Visita próxima',`${v.clientNombre||'Cliente'} · ${v.fecha} ${v.hora||''}`);
+    await d.ref.set({alertaEnviada:true,alertaEnviadaEn:Timestamp.now()},{merge:true});
+  }
+});
